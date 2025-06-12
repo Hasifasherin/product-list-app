@@ -1,7 +1,7 @@
 body {
   margin: 0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: #f5f7fa;
+  background: #f7f9fc;
 }
 
 .app-container {
@@ -14,9 +14,22 @@ h1 {
   margin-bottom: 10px;
 }
 
-h3 {
-  color: #444;
-  margin-bottom: 30px;
+.cart-header {
+  margin-bottom: 20px;
+}
+
+.view-cart-btn {
+  background-color: #008060;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.view-cart-btn:hover {
+  background-color: #006b50;
 }
 
 .product-list {
@@ -24,4 +37,25 @@ h3 {
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 20px;
   padding: 0 20px;
+}
+
+.cart-container {
+  padding: 20px;
+  background-color: white;
+  border-radius: 12px;
+  max-width: 600px;
+  margin: 0 auto;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.cart-container ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+.cart-container li {
+  text-align: left;
+  margin-bottom: 10px;
+  font-size: 16px;
 }
