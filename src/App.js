@@ -1,7 +1,7 @@
 // src/App.js
 import React, { useState } from "react";
 import Product from "./components/Product";
-import Cart from "./Cart";
+import Cart from "./cart";
 import "./App.css";
 
 function App() {
@@ -20,6 +20,11 @@ function App() {
     setCart([...cart, product]);
   };
 
+  const handleRemoveFromCart = (id) => {
+    const updatedCart = cart.filter((item) => item.id !== id);
+    setCart(updatedCart);
+  };
+
   return (
     <div className="app-container">
       <h1>🛍️ Product Catalog</h1>
@@ -29,7 +34,7 @@ function App() {
         </button>
       </div>
       {showCart ? (
-        <Cart cartItems={cart} />
+        <Cart cartItems={cart} onRemove={handleRemoveFromCart} />
       ) : (
         <div className="product-list">
           {products.map((product) => (
@@ -37,7 +42,7 @@ function App() {
               key={product.id}
               name={product.name}
               price={product.price}
-              onAddToCart={handleAddToCart}
+              onAddToCart={() => handleAddToCart(product)}
             />
           ))}
         </div>
