@@ -1,53 +1,29 @@
-// src/Cart.js
-import React from "react";
-import axios from "axios";
-import "./App.css";
+import React from 'react';
 
-function Cart({ cartItems, onRemove }) {
-  const totalItems = cartItems.length;
-  const totalPrice = cartItems.reduce((sum, item) => sum + item.price, 0);
+const Cart = ({ cartItems, removeFromCart }) => {
+  // Group items by product ID and count quantity
+  const groupedItems = cartItems.reduce((acc, item) => {
+    acc[item.id] = acc[item.id] || { ...item, quantity: 0 };
+    acc[item.id].quantity += 1;
+    return acc;
+  }, {});
 
-  const handleCheckout = async () => {
-    try {
-      const response = await axios.post("http://localhost:5000/checkout", {
-        items: cartItems,
-        totalItems,
-        totalPrice,
-      });
-      alert("Checkout successful! 🎉 Server Response: " + response.data.message);
-    } catch (error) {
-      alert("Checkout failed: " + error.message);
-    }
-  };
+  const cartArray = Object.values(groupedItems);
+
+  const total = cartArray.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
-    <div className="cart-container">
-      <h2>🛒 Your Cart</h2>
-      {cartItems.length === 0 ? (
-        <p>Your cart is empty.</p>
-      ) : (
-        <>
-          <ul>
-            {cartItems.map((item) => (
-              <li key={item.id} className="cart-item">
-                <span>
-                  {item.name} - ₹{item.price.toLocaleString()}
-                </span>
-                <button className="remove-btn" onClick={() => onRemove(item.id)}>
-                  🗑️ Remove
-                </button>
-              </li>
-            ))}
-          </ul>
-          <h4>Total Items: {totalItems}</h4>
-          <h4>Total Price: ₹{totalPrice.toLocaleString()}</h4>
-          <button className="checkout-btn" onClick={handleCheckout}>
-            Proceed to Checkout
-          </button>
-        </>
-      )}
+    <div className="cart">
+      <h2>🛒 Cart</h2>
+      {cartArray.map((item) => (
+        <div key={item.id} className="cart-item">
+          {item.name} × {item.quantity} = ₹{item.price * item.quantity}
+          <button onClick={() => removeFromCart(item.id)}>Remove</button>
+        </div>
+      ))}
+      <h3>Total: ₹{total}</h3>
     </div>
   );
-}
+};
 
 export default Cart;

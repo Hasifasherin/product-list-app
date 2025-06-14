@@ -1,54 +1,74 @@
-// src/App.js
-import React, { useState } from "react";
-import Product from "./components/Product";
-import Cart from "./cart";
-import "./App.css";
+import React, { useState } from 'react';
+import ProductList from './ProductList';
+import Cart from './cart';
+import './App.css';
 
-function App() {
+const App = () => {
   const [cart, setCart] = useState([]);
   const [showCart, setShowCart] = useState(false);
 
-  const products = [
-    { id: 1, name: "Gaming Laptop", price: 85000 },
-    { id: 2, name: "Smartphone", price: 30000 },
-    { id: 3, name: "Bluetooth Headphones", price: 4500 },
-    { id: 4, name: "Wireless Mouse", price: 1200 },
-    { id: 5, name: "Mechanical Keyboard", price: 3500 },
-  ];
-
-  const handleAddToCart = (product) => {
+  const addToCart = (product) => {
     setCart([...cart, product]);
   };
 
-  const handleRemoveFromCart = (id) => {
-    const updatedCart = cart.filter((item) => item.id !== id);
-    setCart(updatedCart);
+  const removeFromCart = (productId) => {
+    const index = cart.findIndex(p => p.id === productId);
+    if (index !== -1) {
+      const updatedCart = [...cart];
+      updatedCart.splice(index, 1);
+      setCart(updatedCart);
+    }
+  };
+
+  const checkout = async () => {
+    const groupedItems = cart.reduce((acc, item) => {
+      acc[item.id] = acc[item.id] || { ...item, quantity: 0 };
+      acc[item.id].quantity += 1;
+      return acc;
+    }, {});
+
+    const items = Object.values(groupedItems);
+    const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+    const totalPrice = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+    try {
+      const response = await fetch("http://localhost:5000/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items, totalItems, totalPrice }),
+      });
+
+      const data = await response.json();
+      alert(data.message || "Checkout complete!");
+    } catch (error) {
+      console.error("Checkout failed:", error);
+      alert("Checkout failed.");
+    }
   };
 
   return (
-    <div className="app-container">
-      <h1>🛍️ Product Catalog</h1>
-      <div className="cart-header">
-        <button className="view-cart-btn" onClick={() => setShowCart(!showCart)}>
-          {showCart ? "Back to Shop" : `Go to Cart (${cart.length})`}
-        </button>
+    <div className="app">
+      <div className="header">
+        <h1>🛍️ My React Shop</h1>
+        <div className="cart-actions">
+          <button className="cart-button" onClick={() => setShowCart(!showCart)}>
+            🛒 Cart ({cart.length})
+          </button>
+          <button className="checkout-button" onClick={checkout}>
+            🧾 Checkout
+          </button>
+        </div>
       </div>
-      {showCart ? (
-        <Cart cartItems={cart} onRemove={handleRemoveFromCart} />
-      ) : (
-        <div className="product-list">
-          {products.map((product) => (
-            <Product
-              key={product.id}
-              name={product.name}
-              price={product.price}
-              onAddToCart={() => handleAddToCart(product)}
-            />
-          ))}
+
+      <ProductList addToCart={addToCart} />
+
+      {showCart && (
+        <div className="cart-section">
+          <Cart cartItems={cart} removeFromCart={removeFromCart} />
         </div>
       )}
     </div>
   );
-}
+};
 
 export default App;
