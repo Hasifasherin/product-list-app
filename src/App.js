@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ProductList from './ProductList';
-import Cart from './cart';
+import Cart from './cart'; // lowercase 'c'
 import './App.css';
 
 const App = () => {
